@@ -1,0 +1,26 @@
+---
+- name: Install Keystone
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install keystone
+      apt:
+        name: keystone
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install Keystone package for RHEL/CentOS
+      yum:
+        name: openstack-keystone
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Sync Keystone database
+      command: keystone-manage db_sync
+
+    - name: start Keystone service
+      systemd:
+        name: keystone
+        state: started
+        enable: true

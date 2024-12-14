@@ -1,0 +1,20 @@
+---
+- name: Install Glance
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Glance package
+      apt:
+        name: glance
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Sysnc Glance database
+      command: glance-manage db sync
+
+    - name: Start Glance service
+      systemd:
+        name: glance-api
+        state: started
+        enable: yes

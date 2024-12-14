@@ -1,0 +1,24 @@
+---
+- name: Install Nova
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Nova packages
+      apt:
+        name: nova-api
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Sync Nova database
+      command: nova-manage db sync
+
+    - name: Start Nova services
+      systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - nova-api
+        - nova-scheduler
+        - nova-conductor
